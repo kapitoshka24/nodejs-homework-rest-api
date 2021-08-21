@@ -10,6 +10,13 @@ const readContacts = async () => {
   return JSON.parse(contacts);
 };
 
+const writeContacts = async (contacts) => {
+  await fs.writeFile(
+    path.join(__dirname, "contacts.json"),
+    JSON.stringify(contacts)
+  );
+};
+
 const listContacts = async () => {
   return await readContacts();
 };
@@ -25,10 +32,7 @@ const removeContact = async (contactId) => {
 
   if (contactIdx !== -1) {
     const removedContact = contacts.splice(contactIdx, 1);
-    await fs.writeFile(
-      path.join(__dirname, "contacts.json"),
-      JSON.stringify(contacts)
-    );
+    writeContacts(contacts);
     return removedContact;
   }
 
@@ -40,11 +44,7 @@ const addContact = async (body) => {
 
   const contacts = await readContacts();
   contacts.push(record);
-
-  await fs.writeFile(
-    path.join(__dirname, "contacts.json"),
-    JSON.stringify(contacts)
-  );
+  writeContacts(contacts);
 
   return record;
 };
@@ -56,10 +56,7 @@ const updateContact = async (contactId, body) => {
     contact.id === contactId ? { ...contact, ...body } : contact
   );
 
-  await fs.writeFile(
-    path.join(__dirname, "contacts.json"),
-    JSON.stringify(newContacts)
-  );
+  writeContacts(newContacts);
 
   const updatedContact = newContacts.find(({ id }) => id === contactId);
   return updatedContact;
