@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const Joi = require("joi");
 
 const schemaAddContact = Joi.object({
@@ -9,6 +10,7 @@ const schemaAddContact = Joi.object({
     .length(10)
     .pattern(/\(?([0-9]{3})\)?([ .-]?)([0-9]{3})\2([0-9]{4})/)
     .required(),
+  favorite: Joi.boolean().default(false),
 });
 
 const schemaUpdateContact = Joi.object({
@@ -20,7 +22,12 @@ const schemaUpdateContact = Joi.object({
     .length(10)
     .pattern(/\(?([0-9]{3})\)?([ .-]?)([0-9]{3})\2([0-9]{4})/)
     .optional(),
-}).or("name", "email", "phone");
+  favorite: Joi.boolean().optional(),
+}).or("name", "email", "phone", "favorite");
+
+const schemaUpdateContactStatus = Joi.object({
+  favorite: Joi.boolean().required(),
+});
 
 const validate = async (schema, obj, next, errorMsg) => {
   try {
@@ -35,7 +42,7 @@ const validate = async (schema, obj, next, errorMsg) => {
 };
 
 module.exports = {
-  validationAddContact: (req, res, next) => {
+  validationAddContact: (req, _, next) => {
     return validate(
       schemaAddContact,
       req.body,
@@ -43,12 +50,29 @@ module.exports = {
       "Missing required name fileds or invalid input data"
     );
   },
-  validationUpdateContact: (req, res, next) => {
+  validationUpdateContact: (req, _, next) => {
     return validate(
       schemaUpdateContact,
       req.body,
       next,
       "Missing fields or invalid input data"
     );
+  },
+  validationUpdateStatusContact: (req, _, next) => {
+    return validate(
+      schemaUpdateContactStatus,
+      req.body,
+      next,
+      "Missing field favorite"
+    );
+  },
+  validateMongoId: (req, _, next) => {
+    if (!mongoose.Types.ObjectId.isValid(req.params.contactId)) {
+      return next({
+        status: 400,
+        message: "Invalid Id",
+      });
+    }
+    next();
   },
 };
