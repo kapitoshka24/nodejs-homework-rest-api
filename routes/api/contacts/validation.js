@@ -2,7 +2,11 @@ const mongoose = require("mongoose");
 const Joi = require("joi");
 
 const schemaAddContact = Joi.object({
-  name: Joi.string().alphanum().min(3).max(30).required(),
+  name: Joi.string()
+    .min(3)
+    .max(30)
+    .pattern(/^\w+(?:\s+\w+)*$/)
+    .required(),
   email: Joi.string()
     .email({ tlds: { allow: false } })
     .required(),
@@ -14,7 +18,11 @@ const schemaAddContact = Joi.object({
 });
 
 const schemaUpdateContact = Joi.object({
-  name: Joi.string().alphanum().min(3).max(30).optional(),
+  name: Joi.string()
+    .min(3)
+    .max(30)
+    .pattern(/^\w+(?:\s+\w+)*$/)
+    .optional(),
   email: Joi.string()
     .email({ tlds: { allow: false } })
     .optional(),
@@ -33,7 +41,7 @@ const validate = async (schema, obj, next, errorMsg) => {
   try {
     await schema.validateAsync(obj);
     next();
-  } catch (err) {
+  } catch (error) {
     next({
       status: 400,
       message: errorMsg,
