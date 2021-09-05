@@ -6,17 +6,19 @@ const {
   validateMongoId,
 } = require("./validation");
 const router = express.Router();
-const cntrl = require("../../controllers/contacts");
+const cntrl = require("../../../controllers/contacts");
+const guard = require("../../../helpers/guard");
 
 router
-  .get("/", cntrl.getAllContacts)
-  .post("/", validationAddContact, cntrl.addContact);
+  .get("/", guard, cntrl.getAllContacts)
+  .post("/", guard, validationAddContact, cntrl.addContact);
 
 router
-  .get("/:contactId", validateMongoId, cntrl.getContactById)
-  .delete("/:contactId", validateMongoId, cntrl.deleteContact)
+  .get("/:contactId", guard, validateMongoId, cntrl.getContactById)
+  .delete("/:contactId", guard, validateMongoId, cntrl.deleteContact)
   .patch(
     "/:contactId",
+    guard,
     validateMongoId,
     validationUpdateContact,
     cntrl.updateContact
@@ -24,6 +26,7 @@ router
 
 router.patch(
   "/:contactId/favorite",
+  guard,
   validateMongoId,
   validationUpdateStatusContact,
   cntrl.updateContact
