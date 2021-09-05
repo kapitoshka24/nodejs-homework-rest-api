@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const Joi = require("joi");
+const { HttpCode } = require("../../../helpers/constants");
 
 const schemaAddContact = Joi.object({
   name: Joi.string()
@@ -43,7 +44,7 @@ const validate = async (schema, obj, next, errorMsg) => {
     next();
   } catch (error) {
     next({
-      status: 400,
+      status: HttpCode.BAD_REQUEST,
       message: errorMsg,
     });
   }
@@ -77,7 +78,7 @@ module.exports = {
   validateMongoId: (req, _, next) => {
     if (!mongoose.Types.ObjectId.isValid(req.params.contactId)) {
       return next({
-        status: 400,
+        status: HttpCode.BAD_REQUEST,
         message: "Invalid Id",
       });
     }

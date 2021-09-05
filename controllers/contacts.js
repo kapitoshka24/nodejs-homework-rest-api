@@ -1,3 +1,4 @@
+const { HttpCode } = require("../helpers/constants");
 const contacts = require("../repositories/contacts");
 
 const getAllContacts = async (req, res, next) => {
@@ -9,7 +10,7 @@ const getAllContacts = async (req, res, next) => {
     );
     return res.json({
       status: "success",
-      code: 200,
+      code: HttpCode.OK,
       data: { contactsList, ...rest },
     });
   } catch (error) {
@@ -24,9 +25,9 @@ const getContactById = async (req, res, next) => {
       req.params.contactId
     );
     if (contact) {
-      return res.json({ status: "success", code: 200, data: { contact } });
+      return res.json({ status: "success", code: HttpCode.OK, data: { contact } });
     }
-    return res.json({ status: "error", code: 404, message: "Not found" });
+    return res.json({ status: "error", code: HttpCode.NOT_FOUND, message: "Not found" });
   } catch (error) {
     next(error);
   }
@@ -35,7 +36,7 @@ const getContactById = async (req, res, next) => {
 const addContact = async (req, res, next) => {
   try {
     const contact = await contacts.addContact(req.user.id, req.body);
-    return res.json({ status: "success", code: 201, data: { contact } });
+    return res.json({ status: "success", code: HttpCode.CREATED, data: { contact } });
   } catch (error) {
     next(error);
   }
@@ -51,14 +52,14 @@ const deleteContact = async (req, res, next) => {
     if (contact) {
       return res.json({
         status: "success",
-        code: 200,
+        code: HttpCode.OK,
         message: "Contact deleted",
       });
     }
 
     return res.json({
       status: "error",
-      code: 404,
+      code: HttpCode.NOT_FOUND,
       message: "Not found",
     });
   } catch (error) {
@@ -77,14 +78,14 @@ const updateContact = async (req, res, next) => {
     if (contact) {
       return res.json({
         status: "success",
-        code: 200,
+        code: HttpCode.OK,
         data: { contact },
       });
     }
 
     return res.json({
       status: "error",
-      code: 404,
+      code: HttpCode.NOT_FOUND,
       message: "Not found",
     });
   } catch (error) {

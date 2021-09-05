@@ -1,4 +1,5 @@
 const Joi = require("joi");
+const { HttpCode } = require("../../../helpers/constants");
 
 const schemaUser = Joi.object({
   email: Joi.string().email({
@@ -25,7 +26,7 @@ const validate = async (schema, obj, next, errorMsg) => {
     next();
   } catch (error) {
     next({
-      status: 400,
+      status: HttpCode.BAD_REQUEST,
       message: errorMsg,
     });
   }
