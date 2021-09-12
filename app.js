@@ -6,11 +6,13 @@ const boolParser = require("express-query-boolean");
 const rateLimit = require("express-rate-limit");
 const { limiterAPI, HttpCode } = require("./helpers/constants");
 const app = express();
+require("dotenv").config();
 
 const formatsLogger = app.get("env") === "development" ? "dev" : "short";
 
 app.use(helmet());
-app.use(logger(formatsLogger));
+app.use(express.static("public"));
+app.get("env") !== "test" && app.use(logger(formatsLogger));
 app.use(cors());
 app.use(express.json({ limit: 10000 }));
 app.use(boolParser());
